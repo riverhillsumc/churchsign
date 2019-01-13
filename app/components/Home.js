@@ -23,6 +23,7 @@ export default class Home extends Component<Props> {
   constructor() {
     super();
     this.state = {
+      debugText: '',
       textRow1: '',
       textRow2: '',
       textRow3: '',
@@ -30,6 +31,8 @@ export default class Home extends Component<Props> {
       colorRed: 200,
       colorGreen: 200,
       colorBlue: 200,
+      brightnessMax: 230,
+      brightnessMin: 50
     }
   }
 
@@ -52,7 +55,7 @@ export default class Home extends Component<Props> {
     }
 
     messages.forEach(message => {
-      const params = `<sign>{${message}<endsign>`;
+      const params = `<sign>{${message}}<endsign>`;
       console.log('debug', params)
       http.open('POST', url, true);
 
@@ -85,52 +88,52 @@ export default class Home extends Component<Props> {
   setCursor = () => {
     const xcursor = document.getElementById("xcursor").value;
     const ycursor = document.getElementById("ycursor").value;
-    const params = '"cursor":[' + xcursor + ',' + ycursor + ']';
+    const params = `"cursor":[${xcursor}, ${ycursor}]`;
     this.putHTML(params);
   }
 
   cursorSlider = () => {
-    let pixelloc = document.getElementById("cursorsliderOutId").value;
-    let params = '"moveCursor":' + pixelloc;
+    const pixelloc = document.getElementById("cursorsliderOutId").value;
+    const params = `"moveCursor":${pixelloc}`;
     this.putHTML(params);
   }
 
   cursorToRight = () => {
-    let params = '"command":"moveCursorRight"';
-    let tmp = parseInt(document.getElementById("xcursor").value);
+    const params = '"command":"moveCursorRight"';
+    const tmp = parseInt(document.getElementById("xcursor").value, 10);
     document.getElementById("xcursor").value = tmp + 1; 
     this.putHTML(params);
   }
 
   cursorToLeft = () => {
-    let params = '"command":"moveCursorLeft"';
-    document.getElementById("xcursor").value = parseInt(document.getElementById("xcursor").value) - 1; 
+    const params = '"command":"moveCursorLeft"';
+    document.getElementById("xcursor").value = parseInt(document.getElementById("xcursor").value, 10) - 1; 
     this.putHTML(params);
   }
 
   cursorToDown = () => {
-    let params = '"command":"moveCursorDown"';
+    const params = '"command":"moveCursorDown"';
     this.putHTML(params);
   }
 
   sendText = () => {
-    //updateColor();
-    let row1text = document.getElementById("row1").value
-    //let row2text = document.getElementById("row2").value
-    let wid1 = document.getElementById("width1").value
-    //let wid2 = document.getElementById("width2").value
+    // updateColor();
+    const row1text = document.getElementById("row1").value;
+    // let row2text = document.getElementById("row2").value;
+    const wid1 = document.getElementById("width1").value;
+    // let wid2 = document.getElementById("width2").value;
 
     let fontsize = 1;
     if (document.getElementById("fontsize").checked) fontsize = 2;
 
-    //let params = '"text1":"' + row1text + '","text2":"' + row2text + '","width1":' + wid1 + ',"width2":' + wid2;
-    let params = '"text":"' + row1text + '","width":' + wid1 + ',"fontsize":' + fontsize;
+    // let params = '"text1":"' + row1text + '","text2":"' + row2text + '","width1":' + wid1 + ',"width2":' + wid2;
+    const params = `"text":"${row1text}","width":${wid1},"fontsize":${fontsize}`;
     this.putHTML(params);
-    //updateColor();
+    // updateColor();
   }
 
   clearAll = () => {
-    let params = '"command":"clearall"';
+    const params = '"command":"clearall"';
     this.putHTML(params);
   }
 
@@ -141,15 +144,15 @@ export default class Home extends Component<Props> {
     document.getElementById("red1OutId").value = 0;
     document.getElementById("green1OutId").value = 0;
     document.getElementById("blue1OutId").value = 0;
-    let params = '"color":[0,0,0]';
+    const params = '"color":[0,0,0]';
     this.putHTML(params);
   }
 
   updateColor = () => { // rgb: 1=red, 2=green, 3=blue
-    let red1 = document.getElementById("Red1").value;
-    let gre1 = document.getElementById("Green1").value;
-    let blu1 = document.getElementById("Blue1").value;
-    let params = '"color":[' + red1 + ',' + gre1 + ',' + blu1 + ']';
+    const red1 = document.getElementById("Red1").value;
+    const gre1 = document.getElementById("Green1").value;
+    const blu1 = document.getElementById("Blue1").value;
+    const params = `"color":[${red1} ,${gre1}, ${blu1}]`;
     this.putHTML(params);
   }
 
@@ -159,29 +162,31 @@ export default class Home extends Component<Props> {
   }
 
   sendPixel = () => {
-    let params = document.getElementById("pixeltext").value;
-    let jsonpix = JSON.parse(params);
-    for (let nn = 0; nn < jsonpix["pix"].length / 2; nn++) {
-      let newparam = '"pix":[' + jsonpix["pix"][nn * 2] + ',' + jsonpix["pix"][nn * 2 + 1] + ']'
+    const params = document.getElementById("pixeltext").value;
+    const jsonpix = JSON.parse(params);
+    for (let nn = 0; nn < jsonpix.pix.length / 2; nn += 1) {
+      const newparam = `"pix":[${jsonpix.pix[nn * 2]}, ${jsonpix.pix[nn * 2 + 1]}]`;
       this.putHTML(newparam);
 
-      let ms = new Date().getTime();
+      const ms = new Date().getTime();
       console.log(nn);
-      while (new Date().getTime() < (ms + 1000)) { }
-
+      while (new Date().getTime() < (ms + 1000)) {
+        // waiting
+      }
     }
-    //PutHTML(params.replace(/\s/g,''));
+
+    // PutHTML(params.replace(/\s/g,''));
   }
 
   updateMaxBrightness = () => {
-    let brigh = document.getElementById("BrightnessId").value;
-    let params = '"maxBright":' + brigh;
+    const brigh = document.getElementById("BrightnessId").value;
+    const params = `"maxBright": ${brigh}`;
     this.putHTML(params);
   }
 
   updateMinBrightness = () => {
-    let brigh = document.getElementById("minBrightnessId").value;
-    let params = '"minBright":' + brigh;
+    const brigh = document.getElementById("minBrightnessId").value;
+    const params = `"minBright": ${brigh}`;
     this.putHTML(params);
   }
 
@@ -221,6 +226,9 @@ export default class Home extends Component<Props> {
     // Commands
     const messages = []
 
+    // Sending clear all
+    messages.push('"command":"clearall"');
+
     // Sending color
     messages.push(`"color": [${colorRed}, ${colorGreen}, ${colorBlue}]`)
 
@@ -228,27 +236,28 @@ export default class Home extends Component<Props> {
     messages.push('"cursor":[0,1]')
 
     // Entering row 1
-    messages.push(`"width": "0", "fontSize": "1", "text": "${textRow1}"`
+    messages.push(`"width": "0", "fontsize": "2", "text": "${textRow1}"`
     )
 
     // Moving the cursor to the row 2
-    messages.push('"cursor":[0,15]')
+    messages.push('"cursor":[0,20]')
 
     // Entering row 2
-    messages.push(`"width": "0", "fontSize": "1", "text": "${textRow2}"`)
+    messages.push(`"width": "0", "fontsize": "2", "text": "${textRow2}"`)
 
     // Moving the cursor to the row 3
-    messages.push('"cursor":[0,29]')
+    messages.push('"cursor":[0,35]') // not going to be able to do 3 at fontsize 2
 
     // Entering row 3
-    messages.push(`"width": "0", "fontSize": "1", "text": "${textRow3}"`)
+    messages.push(`"width": "0", "fontsize": "2", "text": "${textRow3}"`)
 
     // debugger
-    this.putHTML(messages, true)
+    this.setState({debugText: messages})
+    this.putHTML(messages, false)
   }
 
   render() {
-    const {textRow1, textRow2, textRow3, textRow4, colorRed, colorGreen, colorBlue} = this.state;
+    const {textRow1, textRow2, textRow3, textRow4, colorRed, colorGreen, colorBlue, debugText} = this.state;
 
     return (
       <div className={styles.container} data-tid="container">
@@ -282,6 +291,11 @@ export default class Home extends Component<Props> {
         <button onClick={this.sendText}>Send Text</button>
         <button>Clear All</button>
         <button>Undo</button>
+
+        <br/>
+        <h3>Debug</h3>
+        <span>{debugText}</span>
+
         {/* <Link to={routes.COUNTER}>to Counter</Link> */}
       </div>
     );
