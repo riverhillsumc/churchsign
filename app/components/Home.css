@@ -20,3 +20,11 @@
 .row-text {
   width: 150px;
 }
+
+.color-label {
+  width: 75px;
+}
+
+.color-slider {
+  width: 200px;
+}

@@ -24,6 +24,7 @@ export default class Home extends Component<Props> {
     super();
     this.state = {
       debugText: '',
+      largeFont: true,
       textRow1: '',
       textRow2: '',
       textRow3: '',
@@ -66,7 +67,7 @@ export default class Home extends Component<Props> {
 
       // POST callback
       http.onreadystatechange = () => {
-        alert(http.responseText);
+        // alert(http.responseText);
         if (http.readyState === 4 && http.status === 200) {
           // document.getElementById("debug").innerHTM += http.responseText;
           isHTMLFail = false;
@@ -202,6 +203,10 @@ export default class Home extends Component<Props> {
     this.setState({textRow3: event.target.value});
   }
 
+  updateRow4Text = (event) => {
+    this.setState({textRow4: event.target.value});
+  }
+
   updateRedColor = (event) => {
     this.setState({colorRed: event.target.value});
   }
@@ -213,9 +218,22 @@ export default class Home extends Component<Props> {
   updateBlueColor = (event) => {
     this.setState({colorBlue: event.target.value});
   }
+  
+  handleFontChange = (event) => {
+    this.setState({largeFont: event.target.checked})
+  }
 
   sendText = () => {
-    const {textRow1, textRow2, textRow3, textRow4, colorRed, colorGreen, colorBlue} = this.state;
+    const {
+      textRow1,
+      textRow2,
+      textRow3,
+      textRow4,
+      colorRed,
+      colorGreen,
+      colorBlue,
+      largeFont,
+    } = this.state;
 
     console.log('send text')
     console.log(textRow1)
@@ -225,31 +243,24 @@ export default class Home extends Component<Props> {
 
     // Commands
     const messages = []
+    messages.push('"command": "clearall"'); // Sending clear all
+    messages.push(`"color": [${colorRed}, ${colorGreen}, ${colorBlue}]`); // Sending color
+    messages.push('"cursor": [0,1]'); // Moving the cursor to the row 1
 
-    // Sending clear all
-    messages.push('"command":"clearall"');
-
-    // Sending color
-    messages.push(`"color": [${colorRed}, ${colorGreen}, ${colorBlue}]`)
-
-    // Moving the cursor to the row 1
-    messages.push('"cursor":[0,1]')
-
-    // Entering row 1
-    messages.push(`"width": "0", "fontsize": "2", "text": "${textRow1}"`
-    )
-
-    // Moving the cursor to the row 2
-    messages.push('"cursor":[0,20]')
-
-    // Entering row 2
-    messages.push(`"width": "0", "fontsize": "2", "text": "${textRow2}"`)
-
-    // Moving the cursor to the row 3
-    messages.push('"cursor":[0,35]') // not going to be able to do 3 at fontsize 2
-
-    // Entering row 3
-    messages.push(`"width": "0", "fontsize": "2", "text": "${textRow3}"`)
+    // Larger Font
+    if (largeFont) {
+      messages.push(`"width": "0", "fontsize": "2", "text": "${textRow1}"`); // Entering row 1
+      messages.push('"cursor": [0, 20]'); // Moving the cursor to the row 2
+      messages.push(`"width": "0", "fontsize": "2", "text": "${textRow2}"`); // Entering row 2
+    } else {
+      messages.push(`"width": "0", "fontsize": "1", "text": "${textRow1}"`); // Entering row 1
+      messages.push('"cursor": [0, 10]'); // Moving the cursor to the row 2
+      messages.push(`"width": "0", "fontsize": "1", "text": "${textRow2}"`); // Entering row 2
+      messages.push('"cursor": [0, 20]'); // Moving the cursor to the row 3
+      messages.push(`"width": "0", "fontsize": "1", "text": "${textRow3}"`); // Entering row 3
+      messages.push('"cursor": [0, 30]'); // Moving the cursor to the row 4
+      messages.push(`"width": "0", "fontsize": "1", "text": "${textRow4}"`); // Entering row 4
+    }
 
     // debugger
     this.setState({debugText: messages})
@@ -257,44 +268,66 @@ export default class Home extends Component<Props> {
   }
 
   render() {
-    const {textRow1, textRow2, textRow3, textRow4, colorRed, colorGreen, colorBlue, debugText} = this.state;
+    const {textRow1, textRow2, textRow3, textRow4, colorRed, colorGreen, colorBlue, debugText, largeFont} = this.state;
 
     return (
       <div className={styles.container} data-tid="container">
         <h2>RHUMC Sign Controller</h2>
         <h3>Text by row:</h3>
+        <span>
+          Large Font:
+          <input
+            name="isGoing"
+            type="checkbox"
+            checked={largeFont}
+            onChange={this.handleFontChange} />
+        </span>
+        <br/>
+        <br/>
         <span className={styles['row-label']}>Row 1:</span>
-        <input className={styles['row-text']} value={textRow1} onChange={this.updateRow1Text} />
+        <input className={styles['row-text']} defaultValue='' value={textRow1} onChange={this.updateRow1Text} />
         <br/>
         <span className={styles['row-label']}>Row 2:</span>
-        <input className={styles['row-text']} value={textRow2} onChange={this.updateRow2Text} />
+        <input className={styles['row-text']} defaultValue='' value={textRow2} onChange={this.updateRow2Text} />
         <br/>
-        <span className={styles['row-label']}>Row 3:</span>
-        <input className={styles['row-text']} value={textRow3} onChange={this.updateRow3Text} />
-        {/* <input value={textRow4} onChange={this.updateRow4Text}></input> */}
+        {!largeFont &&
+          <div>
+            <span className={styles['row-label']}>Row 3:</span>
+            <input className={styles['row-text']} defaultValue='' value={textRow3} onChange={this.updateRow3Text} />
+            <br/>
+            <span className={styles['row-label']}>Row 4:</span>
+            <input className={styles['row-text']} defaultValue='' value={textRow4} onChange={this.updateRow4Text} />
+          </div>
+        }
 
         <h3>Color:</h3>
-        <span className={styles['row-label']}>Red</span>
-        <input type="range" min="0" max="255" onChange={this.updateRedColor} value={colorRed} />
+        <div className={styles['color-label']}>
+          Red
+        </div>
+        <input className={styles['color-slider']} type="range" min="0" max="255" onChange={this.updateRedColor} value={colorRed} />
         <span>{colorRed}</span>
         <br/>
-        <span className={styles['row-label']}>Green</span>
-        <input type="range" min="0" max="255" onChange={this.updateGreenColor} value={colorGreen} />
+        <div className={styles['color-label']}>
+          Green
+        </div>
+          <input className={styles['color-slider']} type="range" min="0" max="255" onChange={this.updateGreenColor} value={colorGreen} />
         <span>{colorGreen}</span>
         <br/>
-        <span className={styles['row-label']}>Blue</span>
-        <input type="range" min="0" max="255" onChange={this.updateBlueColor} value={colorBlue} />
+        <div className={styles['color-label']}>
+          Blue
+        </div>
+        <input className={styles['color-slider']} type="range" min="0" max="255" onChange={this.updateBlueColor} value={colorBlue} />
         <span>{colorBlue}</span>
 
         <br/>
         <br/>
-        <button onClick={this.sendText}>Send Text</button>
-        <button>Clear All</button>
-        <button>Undo</button>
+        <button type="button" onClick={this.sendText}>Send Text</button>
+        {/* <button>Clear All</button> */}
+        {/* <button>Undo</button> */}
 
-        <br/>
+        {/* <br/>
         <h3>Debug</h3>
-        <span>{debugText}</span>
+        <span>{debugText}</span> */}
 
         {/* <Link to={routes.COUNTER}>to Counter</Link> */}
       </div>
