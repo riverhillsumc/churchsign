@@ -4,6 +4,12 @@ import { Link } from 'react-router-dom';
 import routes from '../constants/routes';
 import styles from './Home.css';
 
+const { ipcRenderer } = window.require("electron");
+const fork = require('child_process').fork;
+const signCommunicatorScript = (process.mainModule.filename.indexOf('app.asar') === -1) ?
+    './app/processes/SignCommunicator.js' :
+    path.join(process.resourcesPath, 'app.asar/app/processes/SignCommunicator.js');
+
 type Props = {};
 
 export default class Home extends Component<Props> {
@@ -20,6 +26,8 @@ export default class Home extends Component<Props> {
   // Small Font - 5 X 8
   // Large Font - 10 X 16
 
+  childProcess;
+
   constructor() {
     super();
     this.state = {
@@ -33,7 +41,8 @@ export default class Home extends Component<Props> {
       colorGreen: 200,
       colorBlue: 200,
       brightnessMax: 230,
-      brightnessMin: 50
+      brightnessMin: 50,
+      sendingMessages: false
     }
   }
 
@@ -82,6 +91,50 @@ export default class Home extends Component<Props> {
 
       return isHTMLFail;
     });
+  }
+
+  sendMessages = (messages) => {
+    return new Promise((resolve) => {
+      console.log('sendMessages start');
+
+      this.setState({ sendingMessages: true });
+      let cmd = 'putHTML';
+      let signCommunicatorChild = fork(signCommunicatorScript, [], {
+        // detached: false,
+        silent: true,
+        execArgv:["--prof"]
+      })
+      ipcRenderer.send('pid-message-add', signCommunicatorChild.pid); // sending back pid for management of forked processes
+      signCommunicatorChild.send({
+        command: cmd,
+        messages,
+      })
+
+      // Returns
+      signCommunicatorChild.on('message', (message) => {
+        console.log('sendMessages - message');
+        if (message.status === 'done') {
+          // Removing all of the listeners, so we don't have a bunch of duplicate listeners
+          this.setState({ sendingMessages: false });
+          ipcRenderer.send('pid-message-remove', signCommunicatorChild.pid); // sending back pid for management of forked processes
+          console.log('sendMessages - done');
+          signCommunicatorChild.kill();
+          resolve(message);
+        } else if (message.status === 'processing') {
+          console.log('sendMessages - processing');
+          if (message.messageNumber) {
+
+          }
+        }
+      })
+
+      signCommunicatorChild.stdout.on('data', (data) => {
+        console.log(`stdio: ${data}`);
+      })
+      signCommunicatorChild.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+      })
+    })
   }
 
   // ------------------------------------------------------------------------
@@ -264,11 +317,23 @@ export default class Home extends Component<Props> {
 
     // debugger
     this.setState({debugText: messages})
-    this.putHTML(messages, false)
+    // this.putHTML(messages, false)
+    this.sendMessages(messages);
   }
 
   render() {
-    const {textRow1, textRow2, textRow3, textRow4, colorRed, colorGreen, colorBlue, debugText, largeFont} = this.state;
+    const {
+      textRow1,
+      textRow2,
+      textRow3,
+      textRow4,
+      colorRed,
+      colorGreen,
+      colorBlue,
+      debugText,
+      largeFont,
+      sendingMessages
+    } = this.state;
 
     return (
       <div className={styles.container} data-tid="container">
@@ -321,7 +386,7 @@ export default class Home extends Component<Props> {
 
         <br/>
         <br/>
-        <button type="button" onClick={this.sendText}>Send Text</button>
+        <button type="button" onClick={this.sendText} disabled={sendingMessages}>Send Text</button>
         {/* <button>Clear All</button> */}
         {/* <button>Undo</button> */}
 

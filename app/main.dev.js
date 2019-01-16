@@ -15,6 +15,9 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 
+const { ipcMain } = require('electron');
+const ps = require('ps-node');
+
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
@@ -24,6 +27,7 @@ export default class AppUpdater {
 }
 
 let mainWindow = null;
+let pids = []; // set of forked processes to destory when the application closes
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -50,6 +54,26 @@ const installExtensions = async () => {
 /**
  * Add event listeners...
  */
+
+// App close handler
+app.on('before-quit', () => {
+  console.log('quiting the app');
+  console.log(pids);
+  pids.forEach((pid) => {
+    // A simple pid lookup
+    console.log(`killing pid ${pid}`);
+    ps.kill( pid, (err) => {
+      if (err) {
+        console.error('process cannot be killed', pid);
+        throw new Error( err );
+      }
+      else {
+        console.log( 'Process %s has been killed!', pid );
+      }
+    });
+  });
+});
+
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
@@ -99,4 +123,16 @@ app.on('ready', async () => {
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   new AppUpdater();
+
+});
+
+// Managing of Forked processes
+ipcMain.on('pid-message-add', (event, arg) => {
+  pids.push(arg);
+});
+
+ipcMain.on('pid-message-remove', (event, arg) => {
+  pids = pids.filter((pid) => {
+    return pid !== arg;
+  });
 });
