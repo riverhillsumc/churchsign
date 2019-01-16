@@ -36,10 +36,11 @@ process.on('message', (message) => {
         messages = [messages];
       }
 
-      messages.forEach(message => {
+      messages.forEach((message, index) => {
         process.send({
           status: 'processing',
-          returnValue: 'aaaaa',
+          commandMessage: message,
+          commandNumber: index + 1,
         })
         putHTML(message);
         sleep(1000);

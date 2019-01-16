@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import routes from '../constants/routes';
 import styles from './Home.css';
 
+const path = require('path');
 const { ipcRenderer } = window.require("electron");
 const fork = require('child_process').fork;
 const signCommunicatorScript = (process.mainModule.filename.indexOf('app.asar') === -1) ?
@@ -94,8 +95,10 @@ export default class Home extends Component<Props> {
   }
 
   sendMessages = (messages) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve) => { // may not need a Promise here
       console.log('sendMessages start');
+
+      const numberOfMessages = messages.length;
 
       this.setState({ sendingMessages: true });
       let cmd = 'putHTML';
@@ -122,9 +125,7 @@ export default class Home extends Component<Props> {
           resolve(message);
         } else if (message.status === 'processing') {
           console.log('sendMessages - processing');
-          if (message.messageNumber) {
-
-          }
+          this.setState({ debugText: `${message.commandNumber}/${numberOfMessages} : ${message.commandMessage}` })
         }
       })
 
@@ -316,7 +317,7 @@ export default class Home extends Component<Props> {
     }
 
     // debugger
-    this.setState({debugText: messages})
+    // this.setState({debugText: messages})
     // this.putHTML(messages, false)
     this.sendMessages(messages);
   }
@@ -390,9 +391,9 @@ export default class Home extends Component<Props> {
         {/* <button>Clear All</button> */}
         {/* <button>Undo</button> */}
 
-        {/* <br/>
+        <br/>
         <h3>Debug</h3>
-        <span>{debugText}</span> */}
+        <span>{debugText}</span>
 
         {/* <Link to={routes.COUNTER}>to Counter</Link> */}
       </div>
