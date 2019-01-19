@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, FormGroup, ControlLabel, FormControl, HelpBlock, Checkbox } from 'react-bootstrap';
+import { Grid, Row, Col, Button, FormGroup, ControlLabel, FormControl, HelpBlock, Checkbox } from 'react-bootstrap';
 import { SketchPicker } from 'react-color';
 import routes from '../constants/routes';
 import styles from './Home.css';
@@ -295,18 +295,6 @@ export default class Home extends Component<Props> {
     return null;
   }
 
-  updateRedColor = (event) => {
-    this.setState({colorRed: event.target.value});
-  }
-  
-  updateGreenColor = (event) => {
-    this.setState({colorGreen: event.target.value});
-  }
-  
-  updateBlueColor = (event) => {
-    this.setState({colorBlue: event.target.value});
-  }
-
   handleTextColorChange = (color) => {
     this.setState({ textColor: color.rgb });
   }
@@ -364,9 +352,6 @@ export default class Home extends Component<Props> {
       textRow2,
       textRow3,
       textRow4,
-      colorRed,
-      colorGreen,
-      colorBlue,
       textColor,
       debugText,
       largeFont,
@@ -380,89 +365,101 @@ export default class Home extends Component<Props> {
 
     return (
       <div className={styles.container} data-tid="container">
-        <h2>RHUMC Sign Controller</h2>
-
-        <h3>Text Rows</h3>
-        <form>
-          <FormGroup>
-            <Checkbox checked={largeFont} onChange={this.handleFontChange}>Large Font</Checkbox>
-          </FormGroup>
-          <FormGroup
-            controlId="row1Text"
-            validationState={this.getValidationStateRow1()}
-          >
-            <FormControl
-              type="text"
-              value={textRow1}
-              placeholder="Enter text"
-              onChange={this.updateRow1Text}
-            />
-            <FormControl.Feedback />
-            {textRow1.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
-          </FormGroup>
-          <FormGroup
-            controlId="row2Text"
-            validationState={this.getValidationStateRow2()}
-          >
-            <FormControl
-              type="text"
-              value={textRow2}
-              placeholder="Enter text"
-              onChange={this.updateRow2Text}
-            />
-            <FormControl.Feedback />
-            {textRow2.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
-          </FormGroup>
-          {!largeFont &&
-            <FormGroup
-            controlId="row3Text"
-            validationState={this.getValidationStateRow3()}
-            >
-              <FormControl
-                type="text"
-                value={textRow3}
-                placeholder="Enter text"
-                onChange={this.updateRow3Text}
-                />
-              <FormControl.Feedback />
-              {textRow3.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
-            </FormGroup>
-          }
-          {!largeFont &&
-            <FormGroup
-            controlId="row4Text"
-            validationState={this.getValidationStateRow4()}
-            >
-              <FormControl
-                type="text"
-                value={textRow4}
-                placeholder="Enter text"
-                onChange={this.updateRow4Text}
-                />
-              <FormControl.Feedback />
-              {textRow4.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
-            </FormGroup>
-          }
-
-          <h3>Text Color</h3>
-          <SketchPicker
-            className={styles["color-picker"]}
-            color={textColor}
-            onChangeComplete={this.handleTextColorChange}
-          />
-        </form>
-
-        <br/>
-        <br/>
-        <Button onClick={this.sendText} disabled={sendingMessages}>Send Text</Button>
-        {/* <button>Clear All</button> */}
-        {/* <button>Undo</button> */}
-
-        <br/>
-        <h3>Debug</h3>
-        <span>{debugText}</span>
-
-        {/* <Link to={routes.COUNTER}>to Counter</Link> */}
+        <Grid>
+          <Row className="show-grid">
+            <Col sm={12} md={12}>
+              <h2>RHUMC Sign Controller</h2>
+            </Col>
+          </Row>
+          <Row className="show-grid">
+            <Col sm={6} md={6}>
+              <h3>Text Rows</h3>
+              <FormGroup>
+                <Checkbox checked={largeFont} onChange={this.handleFontChange}>Large Font</Checkbox>
+              </FormGroup>
+              <FormGroup
+                controlId="row1Text"
+                validationState={this.getValidationStateRow1()}
+                >
+                <FormControl
+                  type="text"
+                  value={textRow1}
+                  placeholder="Enter text"
+                  onChange={this.updateRow1Text}
+                  />
+                <FormControl.Feedback />
+                {textRow1.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
+              </FormGroup>
+              <FormGroup
+                controlId="row2Text"
+                validationState={this.getValidationStateRow2()}
+                >
+                <FormControl
+                  type="text"
+                  value={textRow2}
+                  placeholder="Enter text"
+                  onChange={this.updateRow2Text}
+                  />
+                <FormControl.Feedback />
+                {textRow2.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
+              </FormGroup>
+              {!largeFont &&
+                <FormGroup
+                  controlId="row3Text"
+                  validationState={this.getValidationStateRow3()}
+                  >
+                  <FormControl
+                    type="text"
+                    value={textRow3}
+                    placeholder="Enter text"
+                    onChange={this.updateRow3Text}
+                    />
+                  <FormControl.Feedback />
+                  {textRow3.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
+                </FormGroup>
+              }
+              {!largeFont &&
+                <FormGroup
+                  controlId="row4Text"
+                  validationState={this.getValidationStateRow4()}
+                  >
+                  <FormControl
+                    type="text"
+                    value={textRow4}
+                    placeholder="Enter text"
+                    onChange={this.updateRow4Text}
+                    />
+                  <FormControl.Feedback />
+                  {textRow4.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
+                </FormGroup>
+              }
+            </Col>
+            <Col sm={6} md={6}>
+              <h3>Text Color</h3>
+              <SketchPicker
+                className={styles["color-picker"]}
+                color={textColor}
+                onChangeComplete={this.handleTextColorChange}
+                >
+              </SketchPicker>
+            </Col>
+          </Row>
+          <Row className="show-grid">
+            <Col sm={12} md={12}>
+              <h3>Commands</h3>
+              <Button onClick={this.sendText} disabled={sendingMessages}>Send Text</Button>
+              {/* <button>Clear All</button> */}
+              {/* <button>Undo</button> */}
+            </Col>
+          </Row>
+          <Row className="show-grid">
+            <Col sm={12} md={12}>
+              <h3>Debug</h3>
+              <h4>{debugText}</h4>
+            </Col>
+          </Row>
+          {/* <Link to={routes.COUNTER}>to Counter</Link> */}
+        </Grid>
       </div>
     );
   }
