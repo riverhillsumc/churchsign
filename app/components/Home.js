@@ -1,8 +1,10 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { Button, FormGroup, ControlLabel, FormControl, HelpBlock } from 'react-bootstrap';
 import routes from '../constants/routes';
 import styles from './Home.css';
+
 
 const path = require('path');
 const { ipcRenderer } = window.require("electron");
@@ -95,6 +97,7 @@ export default class Home extends Component<Props> {
   }
 
   sendMessages = (messages) => {
+    console.log(); //
     return new Promise((resolve) => { // may not need a Promise here
       console.log('sendMessages start');
 
@@ -261,6 +264,34 @@ export default class Home extends Component<Props> {
     this.setState({textRow4: event.target.value});
   }
 
+  getValidationStateRow1 = () => {
+    const { largeFont, textRow1 } = this.state;
+    if (textRow1.length > 16 && largeFont) return 'error';
+    if (textRow1.length > 32 && !largeFont) return 'error';
+    return null;
+  }
+
+  getValidationStateRow2 = () => {
+    const { largeFont, textRow2 } = this.state;
+    if (textRow2.length > 16 && largeFont) return 'error';
+    if (textRow2.length > 32 && !largeFont) return 'error';
+    return null;
+  }
+
+  getValidationStateRow3= () => {
+    const { largeFont, textRow3 } = this.state;
+    if (textRow3.length > 16 && largeFont) return 'error';
+    if (textRow3.length > 32 && !largeFont) return 'error';
+    return null;
+  }
+
+  getValidationStateRow4 = () => {
+    const { largeFont, textRow4 } = this.state;
+    if (textRow4.length > 16 && largeFont) return 'error';
+    if (textRow4.length > 32 && !largeFont) return 'error';
+    return null;
+  }
+
   updateRedColor = (event) => {
     this.setState({colorRed: event.target.value});
   }
@@ -336,9 +367,76 @@ export default class Home extends Component<Props> {
       sendingMessages
     } = this.state;
 
+    let characterLimit = 32;
+    if (largeFont) {
+      characterLimit = 16;
+    }
+
     return (
       <div className={styles.container} data-tid="container">
         <h2>RHUMC Sign Controller</h2>
+
+        <h3>Text Rows</h3>
+        <form>
+          <FormGroup
+            controlId="row1Text"
+            validationState={this.getValidationStateRow1()}
+          >
+            <FormControl
+              type="text"
+              value={textRow1}
+              placeholder="Enter text"
+              onChange={this.updateRow1Text}
+            />
+            <FormControl.Feedback />
+            {textRow1.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
+          </FormGroup>
+          <FormGroup
+            controlId="row2Text"
+            validationState={this.getValidationStateRow2()}
+          >
+            <FormControl
+              type="text"
+              value={textRow2}
+              placeholder="Enter text"
+              onChange={this.updateRow2Text}
+            />
+            <FormControl.Feedback />
+            {textRow2.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
+          </FormGroup>
+          {!largeFont &&
+            <FormGroup
+            controlId="row3Text"
+            validationState={this.getValidationStateRow3()}
+            >
+              <FormControl
+                type="text"
+                value={textRow3}
+                placeholder="Enter text"
+                onChange={this.updateRow3Text}
+                />
+              <FormControl.Feedback />
+              {textRow3.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
+            </FormGroup>
+          }
+          {!largeFont &&
+            <FormGroup
+            controlId="row4Text"
+            validationState={this.getValidationStateRow4()}
+            >
+              <FormControl
+                type="text"
+                value={textRow4}
+                placeholder="Enter text"
+                onChange={this.updateRow4Text}
+                />
+              <FormControl.Feedback />
+              {textRow4.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
+            </FormGroup>
+          }
+        </form>
+
+
         <h3>Text by row:</h3>
         <span>
           Large Font:
@@ -387,7 +485,7 @@ export default class Home extends Component<Props> {
 
         <br/>
         <br/>
-        <button type="button" onClick={this.sendText} disabled={sendingMessages}>Send Text</button>
+        <Button onClick={this.sendText} disabled={sendingMessages}>Send Text</Button>
         {/* <button>Clear All</button> */}
         {/* <button>Undo</button> */}
 
