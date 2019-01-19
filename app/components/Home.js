@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, FormGroup, ControlLabel, FormControl, HelpBlock } from 'react-bootstrap';
+import { Button, FormGroup, ControlLabel, FormControl, HelpBlock, Checkbox } from 'react-bootstrap';
 import routes from '../constants/routes';
 import styles from './Home.css';
 
@@ -378,6 +378,9 @@ export default class Home extends Component<Props> {
 
         <h3>Text Rows</h3>
         <form>
+          <FormGroup>
+            <Checkbox checked={largeFont} onChange={this.handleFontChange}>Large Font</Checkbox>
+          </FormGroup>
           <FormGroup
             controlId="row1Text"
             validationState={this.getValidationStateRow1()}
@@ -435,34 +438,6 @@ export default class Home extends Component<Props> {
             </FormGroup>
           }
         </form>
-
-
-        <h3>Text by row:</h3>
-        <span>
-          Large Font:
-          <input
-            name="isGoing"
-            type="checkbox"
-            checked={largeFont}
-            onChange={this.handleFontChange} />
-        </span>
-        <br/>
-        <br/>
-        <span className={styles['row-label']}>Row 1:</span>
-        <input className={styles['row-text']} defaultValue='' value={textRow1} onChange={this.updateRow1Text} />
-        <br/>
-        <span className={styles['row-label']}>Row 2:</span>
-        <input className={styles['row-text']} defaultValue='' value={textRow2} onChange={this.updateRow2Text} />
-        <br/>
-        {!largeFont &&
-          <div>
-            <span className={styles['row-label']}>Row 3:</span>
-            <input className={styles['row-text']} defaultValue='' value={textRow3} onChange={this.updateRow3Text} />
-            <br/>
-            <span className={styles['row-label']}>Row 4:</span>
-            <input className={styles['row-text']} defaultValue='' value={textRow4} onChange={this.updateRow4Text} />
-          </div>
-        }
 
         <h3>Color:</h3>
         <div className={styles['color-label']}>
