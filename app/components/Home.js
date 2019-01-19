@@ -2,9 +2,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, FormGroup, ControlLabel, FormControl, HelpBlock, Checkbox } from 'react-bootstrap';
+import { SketchPicker } from 'react-color';
 import routes from '../constants/routes';
 import styles from './Home.css';
-
 
 const path = require('path');
 const { ipcRenderer } = window.require("electron");
@@ -40,9 +40,12 @@ export default class Home extends Component<Props> {
       textRow2: '',
       textRow3: '',
       textRow4: '',
-      colorRed: 200,
-      colorGreen: 200,
-      colorBlue: 200,
+      textColor: {
+        r: 0,
+        g: 220,
+        b: 0,
+        a: 1,
+      },
       brightnessMax: 230,
       brightnessMin: 50,
       sendingMessages: false
@@ -303,7 +306,11 @@ export default class Home extends Component<Props> {
   updateBlueColor = (event) => {
     this.setState({colorBlue: event.target.value});
   }
-  
+
+  handleTextColorChange = (color) => {
+    this.setState({ textColor: color.rgb });
+  }
+
   handleFontChange = (event) => {
     this.setState({largeFont: event.target.checked})
   }
@@ -314,9 +321,7 @@ export default class Home extends Component<Props> {
       textRow2,
       textRow3,
       textRow4,
-      colorRed,
-      colorGreen,
-      colorBlue,
+      textColor,
       largeFont,
     } = this.state;
 
@@ -329,7 +334,7 @@ export default class Home extends Component<Props> {
     // Commands
     const messages = []
     messages.push('"command": "clearall"'); // Sending clear all
-    messages.push(`"color": [${colorRed}, ${colorGreen}, ${colorBlue}]`); // Sending color
+    messages.push(`"color": [${textColor.r}, ${textColor.g}, ${textColor.b}]`); // Sending color
     messages.push('"cursor": [0,1]'); // Moving the cursor to the row 1
 
     // Larger Font
@@ -362,6 +367,7 @@ export default class Home extends Component<Props> {
       colorRed,
       colorGreen,
       colorBlue,
+      textColor,
       debugText,
       largeFont,
       sendingMessages
@@ -437,26 +443,14 @@ export default class Home extends Component<Props> {
               {textRow4.length > characterLimit && <HelpBlock>{characterLimit} character limit</HelpBlock>}
             </FormGroup>
           }
-        </form>
 
-        <h3>Color:</h3>
-        <div className={styles['color-label']}>
-          Red
-        </div>
-        <input className={styles['color-slider']} type="range" min="0" max="255" onChange={this.updateRedColor} value={colorRed} />
-        <span>{colorRed}</span>
-        <br/>
-        <div className={styles['color-label']}>
-          Green
-        </div>
-          <input className={styles['color-slider']} type="range" min="0" max="255" onChange={this.updateGreenColor} value={colorGreen} />
-        <span>{colorGreen}</span>
-        <br/>
-        <div className={styles['color-label']}>
-          Blue
-        </div>
-        <input className={styles['color-slider']} type="range" min="0" max="255" onChange={this.updateBlueColor} value={colorBlue} />
-        <span>{colorBlue}</span>
+          <h3>Text Color</h3>
+          <SketchPicker
+            className={styles["color-picker"]}
+            color={textColor}
+            onChangeComplete={this.handleTextColorChange}
+          />
+        </form>
 
         <br/>
         <br/>
