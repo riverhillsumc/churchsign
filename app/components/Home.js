@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Grid, Row, Col, Button, FormGroup, ControlLabel, FormControl, HelpBlock, Checkbox } from 'react-bootstrap';
+import { Grid, Row, Col, ButtonToolbar, Button, FormGroup, ControlLabel, FormControl, HelpBlock, Checkbox } from 'react-bootstrap';
 import { SketchPicker } from 'react-color';
 import routes from '../constants/routes';
 import styles from './Home.css';
@@ -193,11 +193,6 @@ export default class Home extends Component<Props> {
     // updateColor();
   }
 
-  clearAll = () => {
-    const params = '"command":"clearall"';
-    this.putHTML(params);
-  }
-
   undo = () => {
     document.getElementById("Red1").value = 0;
     document.getElementById("Green1").value = 0;
@@ -206,14 +201,6 @@ export default class Home extends Component<Props> {
     document.getElementById("green1OutId").value = 0;
     document.getElementById("blue1OutId").value = 0;
     const params = '"color":[0,0,0]';
-    this.putHTML(params);
-  }
-
-  updateColor = () => { // rgb: 1=red, 2=green, 3=blue
-    const red1 = document.getElementById("Red1").value;
-    const gre1 = document.getElementById("Green1").value;
-    const blu1 = document.getElementById("Blue1").value;
-    const params = `"color":[${red1} ,${gre1}, ${blu1}]`;
     this.putHTML(params);
   }
 
@@ -301,6 +288,13 @@ export default class Home extends Component<Props> {
 
   handleFontChange = (event) => {
     this.setState({largeFont: event.target.checked})
+  }
+
+  clearScreen = () => {
+    // Commands
+    const messages = []
+    messages.push('"command": "clearall"'); // Sending clear all
+    this.sendMessages(messages);
   }
 
   sendText = () => {
@@ -447,9 +441,11 @@ export default class Home extends Component<Props> {
           <Row className="show-grid">
             <Col sm={12} md={12}>
               <h3>Commands</h3>
-              <Button onClick={this.sendText} disabled={sendingMessages}>Send Text</Button>
-              {/* <button>Clear All</button> */}
-              {/* <button>Undo</button> */}
+              <ButtonToolbar>
+                <Button onClick={this.sendText} disabled={sendingMessages}>Send Text</Button>
+                <Button onClick={this.clearScreen} disabled={sendingMessages}>Clear Screen</Button>
+                {/* <button>Undo</button> */}
+              </ButtonToolbar>
             </Col>
           </Row>
           <Row className="show-grid">
