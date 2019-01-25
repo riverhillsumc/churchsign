@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Grid, Row, Col, ButtonToolbar, Button, FormGroup, ControlLabel, FormControl, HelpBlock, Checkbox } from 'react-bootstrap';
+import { Grid, Row, Col, ButtonToolbar, Button, FormGroup, ControlLabel, FormControl, HelpBlock, Checkbox, ProgressBar } from 'react-bootstrap';
 import { SketchPicker } from 'react-color';
 import routes from '../constants/routes';
 import styles from './Home.css';
@@ -35,6 +35,8 @@ export default class Home extends Component<Props> {
     super();
     this.state = {
       debugText: '',
+      numberOfMessages: 0,
+      messageNumber: 0,
       largeFont: true,
       textRow1: '',
       textRow2: '',
@@ -104,7 +106,7 @@ export default class Home extends Component<Props> {
     return new Promise((resolve) => { // may not need a Promise here
       console.log('sendMessages start');
 
-      const numberOfMessages = messages.length;
+      this.setState({ numberOfMessages: messages.length });
 
       this.setState({ sendingMessages: true });
       let cmd = 'putHTML';
@@ -131,7 +133,8 @@ export default class Home extends Component<Props> {
           resolve(message);
         } else if (message.status === 'processing') {
           console.log('sendMessages - processing');
-          this.setState({ debugText: `${message.commandNumber}/${numberOfMessages} : ${message.commandMessage}` })
+          this.setState({ messageNumber: message.commandNumber });
+          this.setState({ debugText: `${this.state.messageNumber}/${this.state.numberOfMessages} : ${message.commandMessage}` })
         }
       })
 
@@ -254,6 +257,14 @@ export default class Home extends Component<Props> {
     this.setState({textRow4: event.target.value});
   }
 
+  updateMaxBrightness = (event) => {
+    this.setState({brightnessMax: event.target.value});
+  }
+
+  updateMinBrightness = (event) => {
+    this.setState({brightnessMin: event.target.value});
+  }
+
   getValidationStateRow1 = () => {
     const { largeFont, textRow1 } = this.state;
     if (textRow1.length > 16 && largeFont) return 'error';
@@ -282,6 +293,20 @@ export default class Home extends Component<Props> {
     return null;
   }
 
+  getValidationStateMaxBrightness = () => {
+    const { brightnessMax } = this.state;
+    if (brightnessMax > 255) return 'error';
+    if (brightnessMax < 100) return 'error';
+    return null;
+  }
+
+  getValidationStateMinBrightness = () => {
+    const { brightnessMin } = this.state;
+    if (brightnessMin > 200) return 'error';
+    if (brightnessMin < 10) return 'error';
+    return null;
+  }
+
   handleTextColorChange = (color) => {
     this.setState({ textColor: color.rgb });
   }
@@ -305,6 +330,8 @@ export default class Home extends Component<Props> {
       textRow4,
       textColor,
       largeFont,
+      brightnessMax,
+      brightnessMin,
     } = this.state;
 
     console.log('send text')
@@ -316,13 +343,15 @@ export default class Home extends Component<Props> {
     // Commands
     const messages = []
     messages.push('"command": "clearall"'); // Sending clear all
+    messages.push(`"maxBright": ${brightnessMax}`); // Sending Max Brightness
+    messages.push(`"minBright": ${brightnessMin}`); // Sending Min Brightness
     messages.push(`"color": [${textColor.r}, ${textColor.g}, ${textColor.b}]`); // Sending color
     messages.push('"cursor": [0,1]'); // Moving the cursor to the row 1
 
     // Larger Font
     if (largeFont) {
       messages.push(`"width": "0", "fontsize": "2", "text": "${textRow1}"`); // Entering row 1
-      messages.push('"cursor": [0, 20]'); // Moving the cursor to the row 2
+      messages.push('"cursor": [0, 24]'); // Moving the cursor to the row 2
       messages.push(`"width": "0", "fontsize": "2", "text": "${textRow2}"`); // Entering row 2
     } else {
       messages.push(`"width": "0", "fontsize": "1", "text": "${textRow1}"`); // Entering row 1
@@ -348,9 +377,15 @@ export default class Home extends Component<Props> {
       textRow4,
       textColor,
       debugText,
+      numberOfMessages,
+      messageNumber,
+      brightnessMin,
+      brightnessMax,
       largeFont,
       sendingMessages
     } = this.state;
+
+    const progressPercentage = messageNumber / numberOfMessages * 100;
 
     let characterLimit = 32;
     if (largeFont) {
@@ -428,7 +463,7 @@ export default class Home extends Component<Props> {
                 </FormGroup>
               }
             </Col>
-            <Col sm={6} md={6}>
+            <Col sm={4} md={4}>
               <h3>Text Color</h3>
               <SketchPicker
                 className={styles["color-picker"]}
@@ -436,6 +471,35 @@ export default class Home extends Component<Props> {
                 onChangeComplete={this.handleTextColorChange}
                 >
               </SketchPicker>
+            </Col>
+            <Col sm={2} md={2}>
+              <h3>Brightness</h3>
+              <h4>Max (at daylight)</h4>
+              <FormGroup
+                controlId="maxBrightness"
+                validationState={this.getValidationStateMaxBrightness()}
+                >
+                <FormControl
+                  type="text"
+                  value={brightnessMax}
+                  onChange={this.updateMaxBrightness}
+                  />
+                <FormControl.Feedback />
+                {(brightnessMax > 255 || brightnessMax < 100) && <HelpBlock>Brightness should be within 100 - 255</HelpBlock>}
+              </FormGroup>
+              <h4>Min (at night)</h4>
+              <FormGroup
+                controlId="minBrightness"
+                validationState={this.getValidationStateMinBrightness()}
+                >
+                <FormControl
+                  type="text"
+                  value={brightnessMin}
+                  onChange={this.updateMinBrightness}
+                  />
+                <FormControl.Feedback />
+                {(brightnessMin > 200 || brightnessMin < 10) && <HelpBlock>Brightness should be within 10 - 200</HelpBlock>}
+              </FormGroup>
             </Col>
           </Row>
           <Row className="show-grid">
@@ -448,12 +512,15 @@ export default class Home extends Component<Props> {
               </ButtonToolbar>
             </Col>
           </Row>
-          <Row className="show-grid">
-            <Col sm={12} md={12}>
-              <h3>Debug</h3>
-              <h4>{debugText}</h4>
-            </Col>
-          </Row>
+          {sendingMessages &&
+            <Row className="show-grid">
+              <Col sm={12} md={12}>
+                <h3>Progress</h3>
+                <h4>{debugText}</h4>
+                <ProgressBar active now={progressPercentage} />
+              </Col>
+            </Row>
+          }
           {/* <Link to={routes.COUNTER}>to Counter</Link> */}
         </Grid>
       </div>
