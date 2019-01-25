@@ -1,7 +1,7 @@
 {
   "name": "RHUMC-Sign",
   "productName": "RHUMC Sign Controller",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "River Hills United Methodist Church Sign Controller",
   "author": {
     "name": "Jared Poetter"
