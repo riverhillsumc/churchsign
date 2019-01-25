@@ -24,6 +24,9 @@ export default class Home extends Component<Props> {
   // Clear Screen button
   // Undo button
 
+  // it would be to center each line
+  // a top line large font followed by two lines of small font
+
   // width X height
   // Screen - 192 X 40
   // Small Font - 5 X 8
@@ -48,6 +51,9 @@ export default class Home extends Component<Props> {
         b: 0,
         a: 1,
       },
+      colorRed: true,
+      colorGreen: true,
+      colorBlue: true,
       brightnessMax: 230,
       brightnessMin: 50,
       sendingMessages: false
@@ -315,6 +321,18 @@ export default class Home extends Component<Props> {
     this.setState({largeFont: event.target.checked})
   }
 
+  handleColorRedChange = (event) => {
+    this.setState({colorRed: event.target.checked})
+  }
+
+  handleColorGreenChange = (event) => {
+    this.setState({colorGreen: event.target.checked})
+  }
+
+  handleColorBlueChange = (event) => {
+    this.setState({colorBlue: event.target.checked})
+  }
+
   clearScreen = () => {
     // Commands
     const messages = []
@@ -329,6 +347,9 @@ export default class Home extends Component<Props> {
       textRow3,
       textRow4,
       textColor,
+      colorRed,
+      colorGreen,
+      colorBlue,
       largeFont,
       brightnessMax,
       brightnessMin,
@@ -345,7 +366,8 @@ export default class Home extends Component<Props> {
     messages.push('"command": "clearall"'); // Sending clear all
     messages.push(`"maxBright": ${brightnessMax}`); // Sending Max Brightness
     messages.push(`"minBright": ${brightnessMin}`); // Sending Min Brightness
-    messages.push(`"color": [${textColor.r}, ${textColor.g}, ${textColor.b}]`); // Sending color
+    // messages.push(`"color": [${textColor.r}, ${textColor.g}, ${textColor.b}]`); // Sending color
+    messages.push(`"color": [${colorRed ? 255 : 0}, ${colorGreen ? 255 : 0}, ${colorBlue ? 255 : 0}]`); // Sending color
     messages.push('"cursor": [0,1]'); // Moving the cursor to the row 1
 
     // Larger Font
@@ -364,6 +386,7 @@ export default class Home extends Component<Props> {
     }
 
     // debugger
+    // console.log('messages: ', messages)
     // this.setState({debugText: messages})
     // this.putHTML(messages, false)
     this.sendMessages(messages);
@@ -376,6 +399,9 @@ export default class Home extends Component<Props> {
       textRow3,
       textRow4,
       textColor,
+      colorRed,
+      colorGreen,
+      colorBlue,
       debugText,
       numberOfMessages,
       messageNumber,
@@ -465,12 +491,21 @@ export default class Home extends Component<Props> {
             </Col>
             <Col sm={4} md={4}>
               <h3>Text Color</h3>
-              <SketchPicker
+              <FormGroup>
+                <Checkbox checked={colorRed} onChange={this.handleColorRedChange}>Red</Checkbox>
+              </FormGroup>
+              <FormGroup>
+                <Checkbox checked={colorGreen} onChange={this.handleColorGreenChange}>Green</Checkbox>
+              </FormGroup>
+              <FormGroup>
+                <Checkbox checked={colorBlue} onChange={this.handleColorBlueChange}>Blue</Checkbox>
+              </FormGroup>
+              {/* <SketchPicker
                 className={styles["color-picker"]}
                 color={textColor}
                 onChangeComplete={this.handleTextColorChange}
                 >
-              </SketchPicker>
+              </SketchPicker> */}
             </Col>
             <Col sm={2} md={2}>
               <h3>Brightness</h3>
