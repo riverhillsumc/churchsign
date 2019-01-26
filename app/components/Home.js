@@ -339,6 +339,19 @@ export default class Home extends Component<Props> {
     messages.push('"command": "clearall"'); // Sending clear all
     this.sendMessages(messages);
   }
+  
+  sendBrightness = () => {
+    const {
+      brightnessMax,
+      brightnessMin,
+    } = this.state;
+    
+    // Commands
+    const messages = []
+    messages.push(`"maxBright": ${brightnessMax}`); // Sending Max Brightness
+    messages.push(`"minBright": ${brightnessMin}`); // Sending Min Brightness
+    this.sendMessages(messages);
+  }
 
   sendText = () => {
     const {
@@ -363,7 +376,7 @@ export default class Home extends Component<Props> {
 
     // Commands
     const messages = []
-    messages.push('"command": "clearall"'); // Sending clear all
+    // messages.push('"command": "clearall"'); // Sending clear all
     messages.push(`"maxBright": ${brightnessMax}`); // Sending Max Brightness
     messages.push(`"minBright": ${brightnessMin}`); // Sending Min Brightness
     // messages.push(`"color": [${textColor.r}, ${textColor.g}, ${textColor.b}]`); // Sending color
@@ -542,6 +555,7 @@ export default class Home extends Component<Props> {
               <h3>Commands</h3>
               <ButtonToolbar>
                 <Button onClick={this.sendText} disabled={sendingMessages}>Send Text</Button>
+                <Button onClick={this.sendBrightness} disabled={sendingMessages}>Send Brightness</Button>
                 <Button onClick={this.clearScreen} disabled={sendingMessages}>Clear Screen</Button>
                 {/* <button>Undo</button> */}
               </ButtonToolbar>
