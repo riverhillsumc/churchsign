@@ -378,7 +378,7 @@ export default class Home extends Component<Props> {
     // Commands
     const messages = []
     // messages.push('"command": "clearall"'); // Sending clear all
-    messages.push(`"setBright": ${brightnessMax}`); // Sending Brightness
+    // messages.push(`"setBright": ${brightnessMax}`); // Sending Brightness
     // messages.push(`"maxBright": ${brightnessMax}`); // Sending Max Brightness
     // messages.push(`"minBright": ${brightnessMin}`); // Sending Min Brightness
     messages.push(`"color": [${textColor.r}, ${textColor.g}, ${textColor.b}]`); // Sending color
