@@ -302,7 +302,7 @@ export default class Home extends Component<Props> {
   getValidationStateMaxBrightness = () => {
     const { brightnessMax } = this.state;
     if (brightnessMax > 255) return 'error';
-    if (brightnessMax < 100) return 'error';
+    if (brightnessMax < 150) return 'error';
     return null;
   }
 
@@ -343,13 +343,14 @@ export default class Home extends Component<Props> {
   sendBrightness = () => {
     const {
       brightnessMax,
-      brightnessMin,
+      // brightnessMin,
     } = this.state;
     
     // Commands
     const messages = []
-    messages.push(`"maxBright": ${brightnessMax}`); // Sending Max Brightness
-    messages.push(`"minBright": ${brightnessMin}`); // Sending Min Brightness
+    messages.push(`"setBright": ${brightnessMax}`); // Sending Brightness
+    // messages.push(`"maxBright": ${brightnessMax}`); // Sending Max Brightness
+    // messages.push(`"minBright": ${brightnessMin}`); // Sending Min Brightness
     this.sendMessages(messages);
   }
 
@@ -377,10 +378,11 @@ export default class Home extends Component<Props> {
     // Commands
     const messages = []
     // messages.push('"command": "clearall"'); // Sending clear all
-    messages.push(`"maxBright": ${brightnessMax}`); // Sending Max Brightness
-    messages.push(`"minBright": ${brightnessMin}`); // Sending Min Brightness
-    // messages.push(`"color": [${textColor.r}, ${textColor.g}, ${textColor.b}]`); // Sending color
-    messages.push(`"color": [${colorRed ? 255 : 0}, ${colorGreen ? 255 : 0}, ${colorBlue ? 255 : 0}]`); // Sending color
+    messages.push(`"setBright": ${brightnessMax}`); // Sending Brightness
+    // messages.push(`"maxBright": ${brightnessMax}`); // Sending Max Brightness
+    // messages.push(`"minBright": ${brightnessMin}`); // Sending Min Brightness
+    messages.push(`"color": [${textColor.r}, ${textColor.g}, ${textColor.b}]`); // Sending color
+    // messages.push(`"color": [${colorRed ? 255 : 0}, ${colorGreen ? 255 : 0}, ${colorBlue ? 255 : 0}]`); // Sending color
     messages.push('"cursor": [0,1]'); // Moving the cursor to the row 1
 
     // Larger Font
@@ -504,25 +506,15 @@ export default class Home extends Component<Props> {
             </Col>
             <Col sm={4} md={4}>
               <h3>Text Color</h3>
-              <FormGroup>
-                <Checkbox checked={colorRed} onChange={this.handleColorRedChange}>Red</Checkbox>
-              </FormGroup>
-              <FormGroup>
-                <Checkbox checked={colorGreen} onChange={this.handleColorGreenChange}>Green</Checkbox>
-              </FormGroup>
-              <FormGroup>
-                <Checkbox checked={colorBlue} onChange={this.handleColorBlueChange}>Blue</Checkbox>
-              </FormGroup>
-              {/* <SketchPicker
+              <SketchPicker
                 className={styles["color-picker"]}
                 color={textColor}
                 onChangeComplete={this.handleTextColorChange}
-                >
-              </SketchPicker> */}
+                />
             </Col>
             <Col sm={2} md={2}>
               <h3>Brightness</h3>
-              <h4>Max (at daylight)</h4>
+              {/* <h4>Max (at daylight)</h4> */}
               <FormGroup
                 controlId="maxBrightness"
                 validationState={this.getValidationStateMaxBrightness()}
@@ -533,9 +525,9 @@ export default class Home extends Component<Props> {
                   onChange={this.updateMaxBrightness}
                   />
                 <FormControl.Feedback />
-                {(brightnessMax > 255 || brightnessMax < 100) && <HelpBlock>Brightness should be within 100 - 255</HelpBlock>}
+                {(brightnessMax > 255 || brightnessMax < 150) && <HelpBlock>Brightness should be within 150 - 255</HelpBlock>}
               </FormGroup>
-              <h4>Min (at night)</h4>
+              {/* <h4>Min (at night)</h4>
               <FormGroup
                 controlId="minBrightness"
                 validationState={this.getValidationStateMinBrightness()}
@@ -547,7 +539,7 @@ export default class Home extends Component<Props> {
                   />
                 <FormControl.Feedback />
                 {(brightnessMin > 200 || brightnessMin < 10) && <HelpBlock>Brightness should be within 10 - 200</HelpBlock>}
-              </FormGroup>
+              </FormGroup> */}
             </Col>
           </Row>
           <Row className="show-grid">
