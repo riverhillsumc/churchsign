@@ -32,3 +32,33 @@
 .color-picker {
   color: black;
 }
+
+.pixel-row {
+  height: 4px;
+}
+
+.pixel-on {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.pixel-off {
+  background-color: #000000; /* Green */
+  border: none;
+  color: white;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}

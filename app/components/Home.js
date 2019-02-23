@@ -56,8 +56,15 @@ export default class Home extends Component<Props> {
       colorBlue: true,
       brightnessMax: 230,
       brightnessMin: 50,
-      sendingMessages: false
+      sendingMessages: false,
+      display: Array(40).fill('------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'),
     }
+    // const displayTemp = new Array(40)
+    // for (let index = 0; index < displayTemp.length; index += 1) {
+    //   // display[index] = new Array(192);
+    //   displayTemp[index] = '------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+    // }
+    // this.setState({ display: displayTemp })
   }
 
   sleep = (miliseconds) => {
@@ -377,8 +384,8 @@ export default class Home extends Component<Props> {
     // Commands
     const messages = []
     // messages.push('"command": "clearall"'); // Sending clear all
-    messages.push(`"maxBright": ${brightnessMax}`); // Sending Max Brightness
-    messages.push(`"minBright": ${brightnessMin}`); // Sending Min Brightness
+    // messages.push(`"maxBright": ${brightnessMax}`); // Sending Max Brightness
+    // messages.push(`"minBright": ${brightnessMin}`); // Sending Min Brightness
     // messages.push(`"color": [${textColor.r}, ${textColor.g}, ${textColor.b}]`); // Sending color
     messages.push(`"color": [${colorRed ? 255 : 0}, ${colorGreen ? 255 : 0}, ${colorBlue ? 255 : 0}]`); // Sending color
     messages.push('"cursor": [0,1]'); // Moving the cursor to the row 1
@@ -405,6 +412,390 @@ export default class Home extends Component<Props> {
     this.sendMessages(messages);
   }
 
+  // hex2bin = (hex) => {
+  //   return (parseInt(hex, 16).toString(2))//.padStart(6, '0');
+  // }
+
+  hex2bin = (hex) =>
+{
+    var bytes = [], str;
+
+    for(var i=0; i< hex.length-1; i+=2)
+        bytes.push(parseInt(hex.substr(i, 2), 16));
+
+    return String.fromCharCode.apply(String, bytes);    
+}
+
+  testing = () => {
+    const {
+      textRow1,
+      display,
+    } = this.state;
+    console.log(textRow1)
+    // Screen - 192 X 40
+    let cursor = {
+      x: 0,
+      y: 0,
+    }
+    // const display = new Array(40)
+    // for (let index = 0; index < display.length; index += 1) {
+    //   // display[index] = new Array(192);
+    //   display[index] = '------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+    // }
+    console.log(display)
+    // const text = textRow1;
+    const MONOSPACED_FONT = {
+      // space
+      ' ': [
+        '---',
+        '---',
+        '---',
+        '---',
+        '---',
+        '---',
+        '---',
+        '---',
+      ],
+      // !
+      '!': [
+        '1-',
+        '1-',
+        '1-',
+        '1-',
+        '--',
+        '--',
+        '1-',
+        '--',
+      ],
+      // "
+      '"': [
+        '1--1-',
+        '1--1-',
+        '1--1-',
+        '-----',
+        '-----',
+        '-----',
+        '-----',
+        '-----',
+      ],
+      // #
+      '#': [
+        '-1--1--',
+        '-1--1--',
+        '111111-',
+        '-1--1--',
+        '-1--1--',
+        '-------',
+      ],
+      // A
+      A: [
+        '--11---',
+        '-1--1--',
+        '1----1-',
+        '111111-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '-------',
+      ],
+      // B
+      B: [
+        '11111--',
+        '1----1-',
+        '1----1-',
+        '11111--',
+        '1----1-',
+        '1----1-',
+        '11111--',
+        '-------',
+      ],
+      // C
+      C: [
+        '-1111--',
+        '1----1-',
+        '1------',
+        '1------',
+        '1------',
+        '1----1-',
+        '-1111--',
+        '-------',
+      ],
+      // D
+      D: [
+        '1111---',
+        '1---1--',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1---1--',
+        '1111---',
+        '-------',
+      ],
+      // E
+      E: [
+        '111111-',
+        '1------',
+        '1------',
+        '1111---',
+        '1------',
+        '1------',
+        '111111-',
+        '-------',
+      ],
+      // F
+      F: [
+        '111111-',
+        '1------',
+        '1------',
+        '1111---',
+        '1------',
+        '1------',
+        '1------',
+        '-------',
+      ],
+      // G
+      G: [
+        '-1111--',
+        '1----1-',
+        '1------',
+        '1--111-',
+        '1----1-',
+        '1----1-',
+        '-1111--',
+        '-------',
+      ],
+      // H
+      H: [
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '111111-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '-------',
+      ],
+      // I
+      I: [
+        '111-',
+        '-1--',
+        '-1--',
+        '-1--',
+        '-1--',
+        '-1--',
+        '111-',
+        '----',
+      ],
+      // J
+      J: [
+        '----1-',
+        '----1-',
+        '----1-',
+        '----1-',
+        '----1-',
+        '1---1-',
+        '-111--',
+        '------',
+      ],
+      K: [
+        '1----1-',
+        '1---1--',
+        '1--1---',
+        '111----',
+        '1--1---',
+        '1---1--',
+        '1----1-',
+        '-------',
+      ],
+      L: [
+        '1------',
+        '1------',
+        '1------',
+        '1------',
+        '1------',
+        '1------',
+        '111111-',
+        '-------',
+      ],
+      M: [
+        '1----1-',
+        '11--11-',
+        '1-11-1-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '-------',
+      ],
+      N: [
+        '1----1-',
+        '11---1-',
+        '1-1--1-',
+        '1--1-1-',
+        '1---11-',
+        '1----1-',
+        '1----1-',
+        '-------',
+      ],
+      O: [
+        '-1111--',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '-1111--',
+        '-------',
+      ],
+      P: [
+        '11111--',
+        '1----1-',
+        '1----1-',
+        '11111--',
+        '1------',
+        '1------',
+        '1------',
+        '-------',
+      ],
+      Q: [
+        '-1111--',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1--1-1-',
+        '1---1--',
+        '-111-1-',
+        '-------',
+      ],
+      R: [
+        '11111--',
+        '1----1-',
+        '1----1-',
+        '11111--',
+        '1--1---',
+        '1---1--',
+        '1----1-',
+        '-------',
+      ],
+      S: [
+        '-1111--',
+        '1----1-',
+        '1------',
+        '-1111--',
+        '-----1-',
+        '1----1-',
+        '-1111--',
+        '-------',
+      ],
+      T: [
+        '11111-',
+        '--1---',
+        '--1---',
+        '--1---',
+        '--1---',
+        '--1---',
+        '--1---',
+        '------',
+      ],
+      U: [
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '-1111--',
+        '-------',
+      ],
+      V: [
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '-1--1--',
+        '--11---',
+        '-------',
+      ],
+      W: [
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1----1-',
+        '1-11-1-',
+        '11--11-',
+        '1----1-',
+        '-------',
+      ],
+      X: [
+        '1----1-',
+        '1----1-',
+        '-1--1--',
+        '--11---',
+        '-1--1--',
+        '1----1-',
+        '1----1-',
+        '-------',
+      ],
+      Y: [
+        '1---1-',
+        '1---1-',
+        '1---1-',
+        '-111--',
+        '--1---',
+        '--1---',
+        '--1---',
+        '------',
+      ],
+      Z: [
+        '11111-',
+        '----1-',
+        '---1--',
+        '--1---',
+        '-1----',
+        '1-----',
+        '11111-',
+        '------',
+      ],
+      // a
+      a: [
+        '------',
+        '------',
+        '-111--',
+        '----1-',
+        '-1111-',
+        '1---1-',
+        '-1111-',
+        '------',
+      ],
+    }
+
+    for (let index = 0; index < textRow1.length; index += 1) {
+      console.log('text[index]', textRow1[index]);
+      const character = MONOSPACED_FONT[textRow1[index]];
+      console.log('character', character);
+      const characterWidth = character[0].length;
+      console.log('characterWidth', characterWidth);
+      const characterHeight = character.length;
+      console.log('characterHeight', characterHeight);
+
+      for (let y = 0; y < character.length; y += 1) {
+        // for (let x = 0; x < character[y].length; x += 1) {
+          let currentLine = display[cursor.y + y];
+          currentLine = currentLine.substring(0, cursor.x) + character[y] + currentLine.substring(cursor.x + characterWidth);
+          currentLine = currentLine.substring(0, 192); // Cap the line length
+          display[cursor.y + y] = currentLine;
+        // }
+      }
+
+      cursor.x += characterWidth;
+    }
+
+    console.log(display)
+    this.setState({ display });
+
+  }
+
   render() {
     const {
       textRow1,
@@ -421,7 +812,8 @@ export default class Home extends Component<Props> {
       brightnessMin,
       brightnessMax,
       largeFont,
-      sendingMessages
+      sendingMessages,
+      display,
     } = this.state;
 
     const progressPercentage = messageNumber / numberOfMessages * 100;
@@ -557,9 +949,22 @@ export default class Home extends Component<Props> {
                 <Button onClick={this.sendText} disabled={sendingMessages}>Send Text</Button>
                 <Button onClick={this.sendBrightness} disabled={sendingMessages}>Send Brightness</Button>
                 <Button onClick={this.clearScreen} disabled={sendingMessages}>Clear Screen</Button>
+                <Button onClick={this.testing} disabled={sendingMessages}>testing</Button>
                 {/* <button>Undo</button> */}
               </ButtonToolbar>
             </Col>
+          </Row>
+          <Row>
+            {display.map((row) => {
+              const rowArray = row.split('');
+              let rowButtons = rowArray.map((pixel) => {
+                // className={styles.container}
+                const className = pixel === '1' ? styles['pixel-on'] : styles['pixel-off'];
+                // className += 
+                return (<button className={pixel === '1' ? styles['pixel-on'] : styles['pixel-off']}>{' '}</button>)
+              })
+              return (<Col className={styles['pixel-row']} sm={12} md={12}>{rowButtons}</Col>)
+            })}
           </Row>
           {sendingMessages &&
             <Row className="show-grid">
